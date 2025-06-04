@@ -19,16 +19,14 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    @Autowired
-    private AuditService auditService;
-
     public List<UserDTO> getAllUsers() {
         return userRepository.findAllProjectedBy();
     }
 
-    public UserDTO getUserByEmail(String email) {
+    public UserDTO getUserDTOByEmail(String email) {
         return userRepository.findProjectedByEmail(email);
     }
+    public User getUserByEmail(String email) {return userRepository.findByEmail(email);}
 
     public User updateUser(String email, User user) {
         User existingUser = userRepository.findByEmail(email);
@@ -42,13 +40,13 @@ public class UserService {
         }
     }
 
-    public boolean deleteUser(String email) {
+    public User deleteUser(String email) {
         User existingUser = userRepository.findByEmail(email);
         if (existingUser != null) {
             userRepository.deleteByEmail(email);
-            return true;
+            return existingUser;
         } else {
-            return false;
+            return null;
         }
     }
 
@@ -58,14 +56,13 @@ public class UserService {
             return null;
         }
 
-        User savedUser = userRepository.save(user);
-
-//        // Run logging and audit in parallel
+        //        // Run logging and audit in parallel
 //        CompletableFuture.runAsync(() -> auditService.logToFile(savedUser));
 //        CompletableFuture.runAsync(() -> auditService.saveToAuditTable(savedUser));
-        auditService.logToFile(savedUser);
-        auditService.saveToAuditTable(savedUser);
-        return savedUser;
+//        auditService.logToFile(savedUser);
+//        auditService.saveToAuditTable(savedUser);
+//        auditService.logAudit();
+        return userRepository.save(user);
     }
 
 //    public Optional<User> getUserByEmail(String email) {
