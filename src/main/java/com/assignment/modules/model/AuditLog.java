@@ -36,6 +36,7 @@ public class AuditLog {
         this.ipAddress = ipAddress;
         this.requestUri = requestUri;
         this.statusCode = statusCode;
+        this.ThreadName = ThreadName;
         this.errorMsg = errorMsg;
         this.timestamp = LocalDateTime.now();
     }
