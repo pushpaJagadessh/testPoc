@@ -21,23 +21,23 @@ public class UserService {
     @Autowired
     private AuditService auditService;
 
-  // ----- new functions which return completable future -----
+//    -------------Added Auditing to the service------------------
     @Async("taskExecutor")
     public CompletableFuture<List<UserDTO>> getAllUsers() {
         return CompletableFuture.completedFuture(userRepository.findAllProjectedBy());
     }
 
     @Async("taskExecutor")
-    public CompletableFuture<UserDTO> getUserByEmail(String email) {
-        return CompletableFuture.completedFuture(userRepository.findProjectedByEmail(email));
+    public CompletableFuture<User> getUserByEmail(String email) {
+        return CompletableFuture.completedFuture(userRepository.findByEmail(email));
     }
 
     @Async("taskExecutor")
     public CompletableFuture<User> createUser(User user) {
         try {
             User savedUser = userRepository.save(user);
-            CompletableFuture.runAsync(() -> auditService.logToFile(savedUser));
-            CompletableFuture.runAsync(() -> auditService.saveToAuditTable(savedUser));
+//            CompletableFuture.runAsync(() -> auditService.logToFile(savedUser));
+//            CompletableFuture.runAsync(() -> auditService.saveToAuditTable(savedUser));
             return CompletableFuture.completedFuture(savedUser);
         } catch (DuplicateKeyException e) {
             return CompletableFuture.completedFuture(null);
@@ -58,15 +58,63 @@ public class UserService {
     }
 
     @Async("taskExecutor")
-    public CompletableFuture<Boolean> deleteUser(String email) {
+    public CompletableFuture<User> deleteUser(String email) {
         User existingUser = userRepository.findByEmail(email);
         if (existingUser != null) {
             userRepository.deleteByEmail(email);
-            return CompletableFuture.completedFuture(true);
+            return CompletableFuture.completedFuture(existingUser);
         } else {
-            return CompletableFuture.completedFuture(false);
+            return null;
         }
     }
+
+
+    // ----- new functions which return completable future -----
+//    @Async("taskExecutor")
+//    public CompletableFuture<List<UserDTO>> getAllUsers() {
+//        return CompletableFuture.completedFuture(userRepository.findAllProjectedBy());
+//    }
+//
+//    @Async("taskExecutor")
+//    public CompletableFuture<UserDTO> getUserByEmail(String email) {
+//        return CompletableFuture.completedFuture(userRepository.findProjectedByEmail(email));
+//    }
+//
+//    @Async("taskExecutor")
+//    public CompletableFuture<User> createUser(User user) {
+//        try {
+//            User savedUser = userRepository.save(user);
+////            CompletableFuture.runAsync(() -> auditService.logToFile(savedUser));
+////            CompletableFuture.runAsync(() -> auditService.saveToAuditTable(savedUser));
+//            return CompletableFuture.completedFuture(savedUser);
+//        } catch (DuplicateKeyException e) {
+//            return CompletableFuture.completedFuture(null);
+//        }
+//    }
+//
+//    @Async("taskExecutor")
+//    public CompletableFuture<User> updateUser(String email, User user) {
+//        User existingUser = userRepository.findByEmail(email);
+//        if (existingUser != null) {
+//            existingUser.setName(user.getName());
+//            existingUser.setEmail(user.getEmail());
+//            existingUser.setAge(user.getAge());
+//            return CompletableFuture.completedFuture(userRepository.save(existingUser));
+//        } else {
+//            return CompletableFuture.completedFuture(null);
+//        }
+//    }
+//
+//    @Async("taskExecutor")
+//    public CompletableFuture<Boolean> deleteUser(String email) {
+//        User existingUser = userRepository.findByEmail(email);
+//        if (existingUser != null) {
+//            userRepository.deleteByEmail(email);
+//            return CompletableFuture.completedFuture(true);
+//        } else {
+//            return CompletableFuture.completedFuture(false);
+//        }
+//    }
 
 
 // -------------This the DTO version of the code------------------
