@@ -22,7 +22,7 @@ public class AuditService {
 
     @Async("taskExecutor")
     public void logAudit(String username, String action, String entityId, String details,
-                         HttpServletRequest request, String ThreadName, int statusCode, String errorMsg) {
+                         HttpServletRequest request, String auditThreadName, String dataThreadName, int statusCode, String errorMsg) {
 
         String ipAddress = request.getRemoteAddr();
         String requestUri = request.getRequestURI();
@@ -34,7 +34,8 @@ public class AuditService {
                 details,
                 ipAddress,
                 requestUri,
-                ThreadName,
+                auditThreadName,
+                dataThreadName,
                 statusCode,
                 errorMsg
         );

@@ -30,7 +30,8 @@ public class UserController {
     }
 
     @GetMapping("/email/{email}")
-    public CompletableFuture<ResponseEntity<User>> getUserByEmail(@PathVariable String email, HttpServletRequest request) {
+    public CompletableFuture<ResponseEntity<?>> getUserByEmail(@PathVariable String email, HttpServletRequest request) {
+        String dataThreadName = Thread.currentThread().getName();
         return userService.getUserByEmail(email)
                 .thenApply(
                 user -> {
@@ -42,10 +43,12 @@ public class UserController {
                                 "User not found",
                                 request,
                                 Thread.currentThread().getName(),
+                                dataThreadName,
                                 404,
                                 "No user with given email"
                         );
-                        return ResponseEntity.notFound().build();
+                        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                                .body("User with email " + email + " not found.");
                     } else {
                         auditService.logAudit(
                                 email,
@@ -54,6 +57,7 @@ public class UserController {
                                 "User fetched successfully",
                                 request,
                                 Thread.currentThread().getName(),
+                                dataThreadName,
                                 200,
                                 "No error"
                         );
@@ -67,9 +71,7 @@ public class UserController {
 
     @PostMapping
     public CompletableFuture<ResponseEntity<?>> createUser(@RequestBody User user, HttpServletRequest request) {
-//        return userService.createUser(user)
-//                .thenApply(savedUser -> savedUser != null ? ResponseEntity.ok(savedUser)
-//                        : ResponseEntity.status(HttpStatus.CONFLICT).body("Email already exists."));
+        String dataThreadName = Thread.currentThread().getName();
         return userService.createUser(user)
                 .thenApply(createdUser -> {
                     if (createdUser == null) {
@@ -80,6 +82,7 @@ public class UserController {
                                 "FAILED, CHECK ERROR",
                                 request,
                                 Thread.currentThread().getName(),
+                                dataThreadName,
                                 400,
                                 "User with email " + user.getEmail() + " already exists."
                         );
@@ -92,7 +95,8 @@ public class UserController {
                                 createdUser.getId(),                // entityId
                                 "User created successfully",        // details
                                 request,                            // HttpServletRequest
-                                Thread.currentThread().getName(),   // thread name
+                                Thread.currentThread().getName(),   // audit thread name
+                                dataThreadName,                     // data thread name
                                 201,                                // status code
                                 "No error"                          // error message
                         );
@@ -103,6 +107,7 @@ public class UserController {
 
     @PutMapping("/email/{email}")
     public CompletableFuture<ResponseEntity<?>> updateUser(@PathVariable String email, @RequestBody User user, HttpServletRequest request) {
+        String dataThreadName = Thread.currentThread().getName();
         return userService.updateUser(email, user)
             .thenApply(updated -> {
                 if (updated != null) {
@@ -113,6 +118,7 @@ public class UserController {
                             "User updated successfully",
                             request,
                             Thread.currentThread().getName(),
+                            dataThreadName,
                             200,
                             "No error"
                     );
@@ -125,6 +131,7 @@ public class UserController {
                             "User not found",
                             request,
                             Thread.currentThread().getName(),
+                            dataThreadName,
                             404,
                             "No user with given email"
                     );
@@ -142,6 +149,7 @@ public class UserController {
 
     @DeleteMapping("/email/{email}")
     public CompletableFuture<ResponseEntity<?>> deleteUser(@PathVariable String email, HttpServletRequest request) {
+        String dataThreadName = Thread.currentThread().getName();
         return userService.deleteUser(email).thenApply(
                 deleted -> {
                     if (deleted != null) {
@@ -152,6 +160,7 @@ public class UserController {
                                 "User deleted successfully",
                                 request,
                                 Thread.currentThread().getName(),
+                                dataThreadName,
                                 202,
                                 "No error"
                         );
@@ -165,6 +174,7 @@ public class UserController {
                                 "User not found",
                                 request,
                                 Thread.currentThread().getName(),
+                                dataThreadName,
                                 404,
                                 "No user with given email"
                         );

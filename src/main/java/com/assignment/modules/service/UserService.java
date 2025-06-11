@@ -29,7 +29,8 @@ public class UserService {
 
     @Async("taskExecutor")
     public CompletableFuture<User> getUserByEmail(String email) {
-        return CompletableFuture.completedFuture(userRepository.findByEmail(email));
+        User user = userRepository.findByEmail(email);
+        return user == null ? CompletableFuture.completedFuture(null) : CompletableFuture.completedFuture(user);
     }
 
     @Async("taskExecutor")
@@ -39,7 +40,7 @@ public class UserService {
 //            CompletableFuture.runAsync(() -> auditService.logToFile(savedUser));
 //            CompletableFuture.runAsync(() -> auditService.saveToAuditTable(savedUser));
             return CompletableFuture.completedFuture(savedUser);
-        } catch (DuplicateKeyException e) {
+        } catch (Exception e) {
             return CompletableFuture.completedFuture(null);
         }
     }

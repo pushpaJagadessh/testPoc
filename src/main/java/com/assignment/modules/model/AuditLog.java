@@ -20,7 +20,8 @@ public class AuditLog {
     private String details;
     private String ipAddress;
     private String requestUri;
-    private String ThreadName;
+    private String auditThreadName;
+    private String dataThreadName;
     private int statusCode;
     private String errorMsg;
     private LocalDateTime timestamp;
@@ -28,7 +29,7 @@ public class AuditLog {
     public AuditLog() {}
 
     public AuditLog(String username, String action, String entityId, String details,
-                    String ipAddress, String requestUri, String ThreadName, int statusCode, String errorMsg) {
+                    String ipAddress, String requestUri, String auditThreadName, String dataThreadName, int statusCode, String errorMsg) {
         this.username = username;
         this.action = action;
         this.entityId = entityId;
@@ -36,7 +37,8 @@ public class AuditLog {
         this.ipAddress = ipAddress;
         this.requestUri = requestUri;
         this.statusCode = statusCode;
-        this.ThreadName = ThreadName;
+        this.auditThreadName = auditThreadName;
+        this.dataThreadName = dataThreadName;
         this.errorMsg = errorMsg;
         this.timestamp = LocalDateTime.now();
     }
@@ -61,12 +63,12 @@ public class AuditLog {
         return entityId;
     }
 
-    public String getThreadName() {
-        return ThreadName;
+    public String getAuditThreadName() {
+        return auditThreadName;
     }
 
-    public void setThreadName(String threadName) {
-        ThreadName = threadName;
+    public void setAuditThreadName(String auditThreadName) {
+        this.auditThreadName = auditThreadName;
     }
 
     public void setEntityId(String entityId) {
@@ -127,5 +129,12 @@ public class AuditLog {
 
     public void setRequestUri(String requestUri) {
         this.requestUri = requestUri;
+    }
+
+    public String getDataThreadName() {
+        return dataThreadName;
+    }
+    public void setDataThreadName(String dataThreadName) {
+        this.dataThreadName = dataThreadName;
     }
 }
