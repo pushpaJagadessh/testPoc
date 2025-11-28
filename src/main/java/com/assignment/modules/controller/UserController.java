@@ -52,4 +52,11 @@ public class UserController {
         userService.deleteUserByEmail(email);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/bad/code")
+    public void checkcodereview() {
+        List list = new ArrayList();
+        list.add(null);
+    return null;
+    }
 }
